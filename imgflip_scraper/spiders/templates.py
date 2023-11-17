@@ -76,5 +76,5 @@ class TemplatesSpider(RedisSpider):
     def closed(self, reason):
         # Insert the remaining documents in the batch
         if self.batch:
-            # self.client.imgflip.templates.insert_many(self.batch)
+            self.client.imgflip.templates.insert_many(self.batch)
             self.batch = list()
