@@ -22,9 +22,7 @@ class Feed(ScrapyCommand):
 
         # Feed the pages to the redis queue
         print(f"Feeding {number_of_page} pages to the redis queue...")
-        client = redis.from_url(
-            self.settings.get("REDIS_URL", "redis://localhost:6379")
-        )
+        client = redis.from_url(self.settings.get("REDIS_URL"))
 
         for page in range(1, number_of_page + 1):
             client.lpush(

@@ -1,6 +1,7 @@
-from collections import defaultdict
 import re
+
 from scrapy_redis.spiders import RedisSpider
+from scrapy.utils.project import get_project_settings
 from pymongo import MongoClient
 
 BATCH_SIZE = 50
@@ -17,7 +18,8 @@ class TemplatesSpider(RedisSpider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.client = MongoClient("mongodb://localhost:27017/")
+        settings = get_project_settings()  # Can't access self.settings in __init__
+        self.client = MongoClient(settings.get("MONGO_URL"))
         self.batch = list()
 
     def parse(self, response):
