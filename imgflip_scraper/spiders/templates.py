@@ -16,10 +16,16 @@ class TemplatesSpider(RedisSpider):
     # Max idle time(in seconds) before the spider stops checking redis and shuts down
     max_idle_time = 5
 
+    # Import settings from project
+    settings = get_project_settings()
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        settings = get_project_settings()  # Can't access self.settings in __init__
-        self.client = MongoClient(settings.get("MONGO_URL"))
+        self.mongo_client = MongoClient(self.settings.get("MONGO_SETTINGS")["url"])
+        self.mongo_db = self.mongo_client[self.settings.get("MONGO_SETTINGS")["db"]]
+        self.mongo_collection = self.mongo_db[
+            self.settings.get("MONGO_SETTINGS")["collection"]
+        ]
         self.batch = list()
 
     def parse(self, response):
@@ -67,7 +73,7 @@ class TemplatesSpider(RedisSpider):
 
         # If the batch is full, insert it into the database
         if len(self.batch) >= BATCH_SIZE:
-            self.client.imgflip.templates.insert_many(self.batch)
+            self.mongo_collection.insert_many(self.batch)
             self.batch = list()
 
         # Follow the next page
@@ -78,5 +84,5 @@ class TemplatesSpider(RedisSpider):
     def closed(self, reason):
         # Insert the remaining documents in the batch
         if self.batch:
-            self.client.imgflip.templates.insert_many(self.batch)
+            self.mongo_collection.insert_many(self.batch)
             self.batch = list()

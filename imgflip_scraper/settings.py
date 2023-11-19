@@ -106,5 +106,9 @@ REDIS_URL = getenv("REDIS_URL", "redis://localhost:6379")
 # Setup custom commands
 COMMANDS_MODULE = "imgflip_scraper.commands"
 
-# Set the MongoDB database url
-MONGO_URL = getenv("MONGO_URL", "mongodb://localhost:27017/")
+# Set the MongoDB settings
+MONGO_SETTINGS = {
+    "url": getenv("MONGO_URL", "mongodb://localhost:27017"),
+    "db": getenv("MONGO_DB", "default"),
+    "collection": getenv("MONGO_COLLECTION", "default"),
+}
